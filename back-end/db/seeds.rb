@@ -171,23 +171,23 @@ enemies = [
 battle_stages = [
     {
         "stage_name": "Stage1",
-        "stage_image": "/images/stage1.jpeg"
+        "stage_image": '/images/stage1.jpeg'
     },
     {
         "stage_name": "Stage2",
-        "stage_image": "/images/stage2.jpeg"
+        "stage_image": '/images/stage2.jpeg'
     },
     {
         "stage_name": "Stage3",
-        "stage_image": "/images/stage3.jpeg"
+        "stage_image": '/images/stage3.jpeg'
     },
     {
         "stage_name": "Stage4",
-        "stage_image": "/images/stage4.jpeg"
+        "stage_image": '/images/stage4.jpeg'
     },
     {
         "stage_name": "Stage5",
-        "stage_image": "/images/stage5.jpeg"
+        "stage_image": '/images/stage5.jpeg'
     }
 
 ]

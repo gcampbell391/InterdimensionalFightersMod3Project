@@ -4,13 +4,16 @@ let currentHeroName = ""
 let currentEnemyName = ""
 let currentEnemyAttacks = []
 let turnAmount = 1
+    // let allStages = []
 
 function startGame(heroId) {
+
     //Clear page and Create Header
     console.log(`battle: ${heroId}`)
     let battleHeader = document.createElement("h1")
     battleHeader.innerText = "Battle 1"
     indexHead.appendChild(battleHeader)
+        // randomStageURL = allStages[Math.floor(Math.random() * 5) + 0].stage_image
 
     // Create 3 divs(Hero - left, Enemy - right, Battle log - bottom)
     let heroDiv = document.createElement("div")
@@ -145,6 +148,24 @@ function wonGame() {
     submitBtn.id = "submitBtn"
     submitBtn.innerText = "Submit"
     playerForm.append(battlePlayerNameInput, playerName, submitBtn)
+    playerForm.addEventListener("submit", function(e) {
+        e.preventDefault()
+        const newGame = {
+            name: e.target.querySelector("input").value,
+            score: parseInt(e.target.parentElement.querySelector("h1").innerText)
+        }
+        fetch('http://localhost:3000/games', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newGame)
+            })
+            .then(response => response.json())
+            .then(game => {
+                console.log(game)
+            })
+    })
     indexBody.append(battleScoreTitle, battleScoreHeader, battlePlayerNameInput, playerForm)
     battleHeader.innerText = "Congrats!!! You Won!!!"
     indexHead.appendChild(battleHeader)

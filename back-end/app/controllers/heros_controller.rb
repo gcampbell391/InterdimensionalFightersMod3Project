@@ -13,4 +13,8 @@ class HerosController < ApplicationController
             render json: { error: "Not found!" }, status: 404
         end 
     end
+
+    def createNewBattle
+        hero = Hero.find(params[:id])
+    end
 end

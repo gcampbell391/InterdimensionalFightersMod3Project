@@ -58,11 +58,10 @@ ActiveRecord::Schema.define(version: 2020_04_13_011253) do
   end
 
   create_table "games", force: :cascade do |t|
-    t.integer "battle_id", null: false
+    t.string "player_name"
     t.integer "score"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["battle_id"], name: "index_games_on_battle_id"
   end
 
   create_table "hero_attacks", force: :cascade do |t|
@@ -89,7 +88,6 @@ ActiveRecord::Schema.define(version: 2020_04_13_011253) do
   add_foreign_key "battles", "heros"
   add_foreign_key "enemy_attacks", "attacks"
   add_foreign_key "enemy_attacks", "enemies"
-  add_foreign_key "games", "battles"
   add_foreign_key "hero_attacks", "attacks"
   add_foreign_key "hero_attacks", "heros"
 end
