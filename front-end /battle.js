@@ -164,6 +164,7 @@ function wonGame() {
             .then(response => response.json())
             .then(game => {
                 console.log(game)
+                renderLeaderBoard()
             })
     })
     indexBody.append(battleScoreTitle, battleScoreHeader, battlePlayerNameInput, playerForm)
@@ -186,17 +187,76 @@ function lostGame() {
 
 
 function disableAttackBtns() {
-    document.querySelector("#attackBtn1").disabled = true
-    document.querySelector("#attackBtn2").disabled = true
-    document.querySelector("#attackBtn3").disabled = true
-    document.querySelector("#attackBtn4").disabled = true
-    document.querySelector("#attackBtn5").disabled = true
+    let atkBtn1 = document.querySelector("#attackBtn1")
+    atkBtn1.disabled = true
+    atkBtn1.style.background = "black"
+
+    let atkBtn2 = document.querySelector("#attackBtn2")
+    atkBtn2.disabled = true
+    atkBtn2.style.background = "black"
+
+    let atkBtn3 = document.querySelector("#attackBtn3")
+    atkBtn3.disabled = true
+    atkBtn3.style.background = "black"
+
+    let atkBtn4 = document.querySelector("#attackBtn4")
+    atkBtn4.disabled = true
+    atkBtn4.style.background = "black"
+    let atkBtn5 = document.querySelector("#attackBtn5")
+    atkBtn5.disabled = true
+    atkBtn5.style.background = "black"
 }
 
 function enableAttackBtns() {
-    document.querySelector("#attackBtn1").disabled = false
-    document.querySelector("#attackBtn2").disabled = false
-    document.querySelector("#attackBtn3").disabled = false
-    document.querySelector("#attackBtn4").disabled = false
-    document.querySelector("#attackBtn5").disabled = false
+    let atkBtn1 = document.querySelector("#attackBtn1")
+    atkBtn1.disabled = false
+    atkBtn1.style.background = "white"
+
+    let atkBtn2 = document.querySelector("#attackBtn2")
+    atkBtn2.disabled = false
+    atkBtn2.style.background = "white"
+
+    let atkBtn3 = document.querySelector("#attackBtn3")
+    atkBtn3.disabled = false
+    atkBtn3.style.background = "white"
+
+    let atkBtn4 = document.querySelector("#attackBtn4")
+    atkBtn4.disabled = false
+    atkBtn4.style.background = "white"
+    let atkBtn5 = document.querySelector("#attackBtn5")
+    atkBtn5.disabled = false
+    atkBtn5.style.background = "white"
+}
+
+
+function fetchLeaderBoard() {
+
+}
+
+function renderLeaderBoard() {
+    indexBody.innerHTML = ""
+    indexHead.innerHTML = ""
+    let leaderBoardHeader = document.createElement("h1")
+    leaderBoardHeader.innerText = "High Scores"
+    indexHead.append(leaderBoardHeader)
+    let scoreOl = document.createElement("ol")
+    scoreOl.id = "scoreOl"
+    fetch("http://localhost:3000/games")
+        .then(resp => resp.json())
+        .then(games => {
+            games.forEach(game => {
+                let scoreLi = document.createElement("li")
+                scoreLi.innerText = `${game.player_name}...............${game.score}`
+                scoreOl.append(scoreLi)
+            })
+            let homeBtn = document.createElement("button")
+            homeBtn.id = "homeBtn"
+            homeBtn.innerText = "Play Again?!"
+            homeBtn.addEventListener("click", function(e) {
+                location.assign('file:///Users/gc3/Development/code/mod3project/front-end%20/index.html');
+            })
+
+            indexBody.append(scoreOl, homeBtn)
+        });
+
 }

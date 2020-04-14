@@ -6,7 +6,6 @@ function fetchHeros() {
     fetch("http://localhost:3000/heros")
         .then(resp => resp.json())
         .then(heros => {
-            console.log(heros)
             heros.forEach(hero => {
                 let heroName = document.createElement("li")
                 let heroImg = document.createElement("img")
