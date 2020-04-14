@@ -1,18 +1,22 @@
 h3 {
     font-size: 30px;
     text-align: center;
+    color: white;
+    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
 }
 
 h4 {
     text-align: center;
     font-size: 20px;
-    color: black
+    color: darkcyan;
+    text-shadow: 1px 1px 2px white, 0 0 25px white, 0 0 5px darkblue;
 }
 
 h1 {
     font-size: 50px;
     text-align: center;
     animation: blinkingText 1.2s infinite;
+    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
 }
 
 #hero {
@@ -24,6 +28,14 @@ h1 {
     display: inline-block;
     padding: 10px;
     margin-left: 200px;
+    border-radius: 25px
+}
+
+#hero_details {
+    background-color: whitesmoke;
+    margin-left: 300px;
+    margin-right: 300px;
+    border-radius: 25px
 }
 
 @keyframes blinkingText {
@@ -48,8 +60,8 @@ h1 {
 }
 
 #tableCaption {
-    text-align: center;
     font-size: 20px;
+    margin-left: 60px
 }
 
 #hero_attacks {
@@ -57,23 +69,27 @@ h1 {
 }
 
 #attackTableBody {
+    color: white;
     text-align: center;
+    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
 }
 
 table,
 th,
 td {
-    border: 1px solid black;
+    border: 1px solid white;
     margin: auto
 }
 
 #startGameBtn {
+    color: white;
     font-size: 30px;
+    text-shadow: 1px 1px 2px black, 0 0 25px purple, 0 0 5px violet;
 }
 
 #startGameBtn:hover {
     font-size: 30px;
-    background-color: red;
+    background-color: purple;
     color: white
 }
 
@@ -93,18 +109,23 @@ td {
     margin-bottom: 300px;
 }
 
+.hidden {
+    display: none;
+}
+
 #battleBottom {
     background-color: whitesmoke;
     float: bottom;
-    padding: 10px;
-    margin-top: 600px;
+    padding: 5px;
+    margin-top: 700px;
     margin-left: 300px;
     margin-right: 300px;
 }
 
 h2 {
-    color: teal;
+    color: white;
     text-align: center;
+    text-shadow: 1px 1px 2px darkcyan, 0 0 25px blue, 0 0 5px darkblue;
 }
 
 #battleLogUl {
@@ -114,16 +135,20 @@ h2 {
 .attackBtns {
     background-color: white;
     color: darkcyan;
-    font-size: 10px;
+    font-size: 15px;
     margin: auto;
     padding-bottom: 5px;
+    width: 160px;
+    text-shadow: 1px 1px 2px white, 0 0 25px blue, 0 0 5px white;
 }
 
 .attackBtns:hover {
     background-color: darkcyan;
     color: white;
-    font-size: 10px;
+    font-size: 15px;
     margin: auto;
+    width: 160px;
+    text-shadow: 1px 1px 2px white, 0 0 25px blue, 0 0 5px darkblue;
 }
 
 #playerForm {
@@ -131,16 +156,18 @@ h2 {
 }
 
 #scoreOl {
-    font-size: 15px;
+    color: white;
+    font-size: 25px;
     text-align: center;
     list-style-type: none;
+    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
 }
 
 #homeBtn {
     background-color: white;
     color: darkcyan;
     font-size: 30px;
-    margin-left: 650px;
+    margin-left: 600px;
     padding-bottom: 5px;
 }
 
@@ -148,6 +175,6 @@ h2 {
     background-color: darkcyan;
     color: white;
     font-size: 30px;
-    margin-left: 650px;
+    margin-left: 600px;
     padding-bottom: 5px;
 }
