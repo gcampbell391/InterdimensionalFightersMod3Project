@@ -1,3 +1,4 @@
+//Variables
 let currentHeroHp = 0
 let currentEnemyHp = 0
 let currentHeroName = ""
@@ -18,6 +19,7 @@ function startGame(heroId) {
     randomStageURL = allStages[Math.floor(Math.random() * 5) + 0].stage_image
     document.body.style.backgroundImage = `url(${randomStageURL})`
 
+
     // Create 3 divs(Hero - left, Enemy - right, Battle log - bottom)
     let heroDiv = document.createElement("div")
     heroDiv.id = "heroDiv"
@@ -26,6 +28,7 @@ function startGame(heroId) {
         .then(hero => {
             let heroImg = document.createElement("img")
             heroImg.src = hero.hero_image
+            heroImg.id = "heroImage"
             heroImg.height = 200
             heroImg.width = 200
             let heroName = document.createElement("h2")
@@ -52,8 +55,10 @@ function startGame(heroId) {
                 attackBtn.style.display = "block"
                 attackBtn.addEventListener("click", function(e) {
                     console.log(`Turn: ${turnAmount++}`)
-                        //Hero's Turn
+
+                    //Hero's Turn
                     setTimeout(function() {
+
                         let battleLogUl = document.querySelector("#battleLogUl")
                         battleLogUl.innerHTML = ""
                         let attackPower = parseInt(e.target.value)
@@ -72,13 +77,33 @@ function startGame(heroId) {
                             recentMove.innerText = `${currentHeroName} used ${e.target.innerText} and dealt ${attackPower} damage to ${currentEnemyName} `
                             battleLogUl.append(recentMove)
                         }
-                        document.querySelector("#enemyHp").innerText = `Current HP: ${currentEnemyHp}`
                         if (currentEnemyHp <= 0) {
                             enemiesDefeated++
+                            alert(`${currentEnemyName} has been defeated!`)
                             nextEnemy()
+
+                        } else {
+                            setTimeout(function() {
+                                    document.querySelector("#animateContainer").style.display = "none"
+                                },
+                                1500)
+                            attackAnimationContainerDiv.innerHTML = ""
+                            document.querySelector("#animateContainer").style.display = "block"
+                            let attackAnimationDiv = document.createElement("div")
+                            attackAnimationDiv.id = "attackAnimate"
+                            attackAnimationContainerDiv.append(attackAnimationDiv)
+                            heroMove()
+                            setTimeout(function() {
+                                document.querySelector("#enemyImage").classList.add("shakeImage")
+                                document.querySelector("#enemyHp").innerText = `Current HP: ${currentEnemyHp}`
+                            }, 1500)
+                            setTimeout(function() {
+                                document.querySelector("#enemyImage").classList.remove("shakeImage")
+                            }, 3000)
                         }
                         disableAttackBtns()
                     }, .5000);
+
                     //Enemy's Turn
                     setTimeout(function() {
                         let enemyAttack = currentEnemyAttacks[Math.floor(Math.random() * 5) + 0]
@@ -97,8 +122,6 @@ function startGame(heroId) {
                                 let enemyMove = document.createElement("li")
                                 enemyMove.innerText = `${currentEnemyName} used ${enemyAttackName} and dealt ${enemyAttackValue} damage to ${currentHeroName}...it is super effective `
                                 battleLogUl.append(advantageLi, enemyMove)
-                                document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
-                                enableAttackBtns();
                             }
                         } else {
                             currentHeroHp = currentHeroHp - enemyAttackValue
@@ -108,11 +131,28 @@ function startGame(heroId) {
                                 let enemyMove = document.createElement("li")
                                 enemyMove.innerText = `${currentEnemyName} used ${enemyAttackName} and dealt ${enemyAttackValue} damage to ${currentHeroName}`
                                 battleLogUl.append(enemyMove)
-                                document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
-                                enableAttackBtns();
                             }
                         }
-                    }, 2000);
+                        attackAnimationContainerDiv.innerHTML = ""
+                        document.querySelector("#animateContainer").style.display = "block"
+                        let attackAnimationDiv = document.createElement("div")
+                        attackAnimationDiv.id = "attackAnimate"
+                        attackAnimationContainerDiv.append(attackAnimationDiv)
+                        enemyMove()
+                        setTimeout(function() {
+                            document.querySelector("#heroImage").classList.add("shakeImage")
+                            enableAttackBtns();
+                            document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
+                        }, 1500)
+                        setTimeout(function() {
+                            document.querySelector("#heroImage").classList.remove("shakeImage")
+                        }, 3000)
+                        setTimeout(function() {
+                                document.querySelector("#animateContainer").style.display = "none"
+                            },
+                            1500)
+
+                    }, 3000);
 
                 })
                 heroDiv.append(attackBtn)
@@ -144,8 +184,14 @@ function startGame(heroId) {
             enemyHp.innerText = `Current HP: ${enemy.enemy_hp}`
             enemyDiv.append(enemyName, enemyImg, enemyHp)
         })
+        //Trial Animation 
 
-    indexBody.append(heroDiv, enemyDiv)
+
+    let attackAnimationContainerDiv = document.createElement("div")
+    attackAnimationContainerDiv.id = "animateContainer"
+
+    ////////
+    indexBody.append(heroDiv, enemyDiv, attackAnimationContainerDiv)
 
     let battleBottom = document.querySelector("#battleBottom")
     battleBottom.classList.remove("hidden")
@@ -153,6 +199,7 @@ function startGame(heroId) {
     battleLog.id = "battleLogUl"
     let battleLogHeader = document.createElement("h2")
     battleLogHeader.innerText = "Battle Log"
+    battleLogHeader.id = "battleLogHeader"
     let battleLiBegin = document.createElement("li")
     battleLiBegin.innerText = "Battle Started..."
     battleLog.append(battleLiBegin)
@@ -160,6 +207,7 @@ function startGame(heroId) {
     battleLiBeginHero.innerText = "Please Select an Attack to Proceed..."
     battleLog.append(battleLiBeginHero)
     battleBottom.append(battleLogHeader, battleLog)
+
 }
 
 //Game Over function
@@ -222,7 +270,7 @@ function nextEnemy() {
     let battleLogUl = document.querySelector("#battleLogUl")
     battleLogUl.innerHTML = ""
     let nextRoundLi = document.createElement("li")
-    nextRoundLi.innerText = `Round ${enemiesDefeated + 1}...Select an attack to proceed`
+    nextRoundLi.innerText = `Round ${enemiesDefeated + 1}....`
     battleLogUl.append(nextRoundLi)
     document.querySelector("h1").innerText = `Battle ${enemiesDefeated + 1}`
         //Grab Next Enemy
@@ -333,3 +381,35 @@ fetch("http://localhost:3000/battle_stages")
             allStages.push(stage)
         })
     })
+
+function heroMove() {
+    let elem = document.getElementById("attackAnimate");
+    let pos = 0;
+    let id = setInterval(frame, 5);
+
+    function frame() {
+        if (pos == 350) {
+            clearInterval(id);
+        } else {
+            pos++;
+            elem.style.left = pos + "px";
+        }
+    }
+}
+
+function enemyMove() {
+    let attackAnimationDiv = document.createElement("div")
+    attackAnimationDiv.id = "attackAnimate"
+    let elem = document.getElementById("attackAnimate");
+    let pos = 0;
+    let id = setInterval(frame, 5);
+
+    function frame() {
+        if (pos == 350) {
+            clearInterval(id);
+        } else {
+            pos++;
+            elem.style.right = pos + "px";
+        }
+    }
+}
