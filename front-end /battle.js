@@ -3,6 +3,8 @@ let currentEnemyHp = 0
 let currentHeroName = ""
 let currentEnemyName = ""
 let currentEnemyAttacks = []
+let currentHeroWeakness = ""
+let currentEnemyWeakness = ""
 let turnAmount = 1
 let allStages = []
 let enemiesDefeated = 0
@@ -29,7 +31,7 @@ function startGame(heroId) {
             let heroName = document.createElement("h2")
             heroName.innerText = hero.name
             currentHeroName = hero.name
-
+            currentHeroWeakness = hero.weakness
             let heroHp = document.createElement("h2")
             heroHp.id = "heroHp"
             currentHeroHp = hero.hero_hp
@@ -42,6 +44,7 @@ function startGame(heroId) {
                 let attackBtn = document.createElement("button")
                 attackBtn.dataset.id = attack.id
                 attackBtn.value = attack.attack_value
+                attackBtn.name = attack.attack_type
                 attackCount++
                 attackBtn.id = `attackBtn${attackCount}`
                 attackBtn.classList.add("attackBtns")
@@ -51,13 +54,25 @@ function startGame(heroId) {
                     console.log(`Turn: ${turnAmount++}`)
                         //Hero's Turn
                     setTimeout(function() {
-                        let attackPower = parseInt(e.target.value)
-                        currentEnemyHp = currentEnemyHp - attackPower
                         let battleLogUl = document.querySelector("#battleLogUl")
-                        let recentMove = document.createElement("li")
-                        recentMove.innerText = `${currentHeroName} used ${e.target.innerText} and dealt ${attackPower} damage to ${currentEnemyName} `
+                        battleLogUl.innerHTML = ""
+                        let attackPower = parseInt(e.target.value)
+                        let attackType = e.target.name
+                        if (attackType === currentEnemyWeakness) {
+                            attackPower = attackPower + 25
+                            currentEnemyHp = currentEnemyHp - attackPower
+                            let advantageLi = document.createElement("li")
+                            advantageLi.innerText = `${currentEnemyName} is vulnerable to ${attackType} attacks...`
+                            let recentMove = document.createElement("li")
+                            recentMove.innerText = `${currentHeroName} used ${e.target.innerText} and dealt ${attackPower} damage to ${currentEnemyName}...it is super effective `
+                            battleLogUl.append(advantageLi, recentMove)
+                        } else {
+                            currentEnemyHp = currentEnemyHp - attackPower
+                            let recentMove = document.createElement("li")
+                            recentMove.innerText = `${currentHeroName} used ${e.target.innerText} and dealt ${attackPower} damage to ${currentEnemyName} `
+                            battleLogUl.append(recentMove)
+                        }
                         document.querySelector("#enemyHp").innerText = `Current HP: ${currentEnemyHp}`
-                        battleLogUl.append(recentMove)
                         if (currentEnemyHp <= 0) {
                             enemiesDefeated++
                             nextEnemy()
@@ -68,16 +83,35 @@ function startGame(heroId) {
                     setTimeout(function() {
                         let enemyAttack = currentEnemyAttacks[Math.floor(Math.random() * 5) + 0]
                         let enemyAttackName = enemyAttack.name
+                        let enemyAttackType = enemyAttack.attack_type
                         let enemyAttackValue = parseInt(enemyAttack.attack_value)
-                        currentHeroHp = currentHeroHp - enemyAttackValue
-                        if (currentHeroHp <= 0) {
-                            gameOver()
+
+                        if (enemyAttackType === currentHeroWeakness) {
+                            enemyAttackValue = enemyAttackValue + 25
+                            currentHeroHp = currentHeroHp - enemyAttackValue
+                            if (currentHeroHp <= 0) {
+                                gameOver()
+                            } else {
+                                let advantageLi = document.createElement("li")
+                                advantageLi.innerText = `${currentHeroName} is vulnerable to ${enemyAttackType} attacks...`
+                                let enemyMove = document.createElement("li")
+                                enemyMove.innerText = `${currentEnemyName} used ${enemyAttackName} and dealt ${enemyAttackValue} damage to ${currentHeroName}...it is super effective `
+                                battleLogUl.append(advantageLi, enemyMove)
+                                document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
+                                enableAttackBtns();
+                            }
+                        } else {
+                            currentHeroHp = currentHeroHp - enemyAttackValue
+                            if (currentHeroHp <= 0) {
+                                gameOver()
+                            } else {
+                                let enemyMove = document.createElement("li")
+                                enemyMove.innerText = `${currentEnemyName} used ${enemyAttackName} and dealt ${enemyAttackValue} damage to ${currentHeroName}`
+                                battleLogUl.append(enemyMove)
+                                document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
+                                enableAttackBtns();
+                            }
                         }
-                        document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
-                        let enemyMove = document.createElement("li")
-                        enemyMove.innerText = `${currentEnemyName} used ${enemyAttackName} and dealt ${enemyAttackValue} damage to ${currentHeroName} `
-                        battleLogUl.append(enemyMove)
-                        enableAttackBtns();
                     }, 2000);
 
                 })
@@ -103,6 +137,7 @@ function startGame(heroId) {
             enemyName.id = "enemyName"
             enemyName.innerText = enemy.name
             currentEnemyName = enemy.name
+            currentEnemyWeakness = enemy.weakness
             let enemyHp = document.createElement("h2")
             enemyHp.id = "enemyHp"
             currentEnemyHp = enemy.enemy_hp
@@ -260,11 +295,25 @@ function renderLeaderBoard() {
     indexHead.append(leaderBoardHeader)
     let scoreOl = document.createElement("ol")
     scoreOl.id = "scoreOl"
-    ALLGAMES.forEach(game => {
-        let scoreLi = document.createElement("li")
-        scoreLi.innerText = `${game.name}...............${game.score}`
-        scoreOl.append(scoreLi)
-    })
+    let allGames = [{ name: "TINY RICK", score: 300000 }]
+    fetch("http://localhost:3000/games")
+        .then(resp => resp.json())
+        .then(games => {
+            games.forEach(game => {
+                allGames.push({
+                    name: game.player_name,
+                    score: game.score
+                })
+            })
+            allGames.sort(function(a, b) {
+                return b.score - a.score;
+            });
+            allGames.forEach(game => {
+                let scoreLi = document.createElement("li")
+                scoreLi.innerText = `${game.name}...............${game.score}`
+                scoreOl.append(scoreLi)
+            })
+        })
     let homeBtn = document.createElement("button")
     homeBtn.id = "homeBtn"
     homeBtn.innerText = "Play Again?!"
