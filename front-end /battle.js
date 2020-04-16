@@ -12,7 +12,7 @@ let enemiesDefeated = 0
 
 function startGame(heroId) {
 
-    //Clear page and Create Header
+    //Clear page, Create Header, and Set Randomn Background image
     let battleHeader = document.createElement("h1")
     battleHeader.innerText = `Battle ${enemiesDefeated + 1}`
     indexHead.appendChild(battleHeader)
@@ -20,179 +20,190 @@ function startGame(heroId) {
     document.body.style.backgroundImage = `url(${randomStageURL})`
 
 
-    // Create 3 divs(Hero - left, Enemy - right, Battle log - bottom)
+    //Hero Div to display Hero 
     let heroDiv = document.createElement("div")
     heroDiv.id = "heroDiv"
     fetch(`http://localhost:3000/heros/${heroId}`)
         .then(resp => resp.json())
         .then(hero => {
-            let heroImg = document.createElement("img")
-            heroImg.src = hero.hero_image
-            heroImg.id = "heroImage"
-            heroImg.height = 200
-            heroImg.width = 200
-            let heroName = document.createElement("h2")
-            heroName.innerText = hero.name
-            currentHeroName = hero.name
-            currentHeroWeakness = hero.weakness
-            let heroHp = document.createElement("h2")
-            heroHp.id = "heroHp"
-            currentHeroHp = hero.hero_hp
-            heroHp.innerText = `Current HP: ${hero.hero_hp}`
-            let heroAttackHeader = document.createElement("h2")
-            heroAttackHeader.innerText = "Attacks"
-            heroDiv.append(heroName, heroImg, heroHp, heroAttackHeader)
-            let attackCount = 0
-            hero.attacks.forEach(attack => {
-                let attackBtn = document.createElement("button")
-                attackBtn.dataset.id = attack.id
-                attackBtn.value = attack.attack_value
-                attackBtn.name = attack.attack_type
-                attackCount++
-                attackBtn.id = `attackBtn${attackCount}`
-                attackBtn.classList.add("attackBtns")
-                attackBtn.innerText = attack.name
-                attackBtn.style.display = "block"
-                attackBtn.addEventListener("click", function(e) {
-                    console.log(`Turn: ${turnAmount++}`)
-
-                    //Hero's Turn
-                    setTimeout(function() {
-
-                        let battleLogUl = document.querySelector("#battleLogUl")
-                        battleLogUl.innerHTML = ""
-                        let attackPower = parseInt(e.target.value)
-                        let attackType = e.target.name
-                        if (attackType === currentEnemyWeakness) {
-                            attackPower = attackPower + 25
-                            currentEnemyHp = currentEnemyHp - attackPower
-                            let advantageLi = document.createElement("li")
-                            advantageLi.innerText = `${currentEnemyName} is vulnerable to ${attackType} attacks...`
-                            let recentMove = document.createElement("li")
-                            recentMove.innerText = `${currentHeroName} used ${e.target.innerText} and dealt ${attackPower} damage to ${currentEnemyName}...it is super effective `
-                            battleLogUl.append(advantageLi, recentMove)
-                        } else {
-                            currentEnemyHp = currentEnemyHp - attackPower
-                            let recentMove = document.createElement("li")
-                            recentMove.innerText = `${currentHeroName} used ${e.target.innerText} and dealt ${attackPower} damage to ${currentEnemyName} `
-                            battleLogUl.append(recentMove)
-                        }
-                        if (currentEnemyHp <= 0) {
-                            enemiesDefeated++
-                            alert(`${currentEnemyName} has been defeated!`)
-                            nextEnemy()
-
-                        } else {
-                            setTimeout(function() {
-                                    document.querySelector("#animateContainer").style.display = "none"
-                                },
-                                1500)
-                            attackAnimationContainerDiv.innerHTML = ""
-                            document.querySelector("#animateContainer").style.display = "block"
-                            let attackAnimationDiv = document.createElement("div")
-                            attackAnimationDiv.id = "attackAnimate"
-                            attackAnimationContainerDiv.append(attackAnimationDiv)
-                            heroMove()
-                            setTimeout(function() {
-                                document.querySelector("#enemyImage").classList.add("shakeImage")
-                                document.querySelector("#enemyHp").innerText = `Current HP: ${currentEnemyHp}`
-                            }, 1500)
-                            setTimeout(function() {
-                                document.querySelector("#enemyImage").classList.remove("shakeImage")
-                            }, 3000)
-                        }
-                        disableAttackBtns()
-                    }, .5000);
-
-                    //Enemy's Turn
-                    setTimeout(function() {
-                        let enemyAttack = currentEnemyAttacks[Math.floor(Math.random() * 5) + 0]
-                        let enemyAttackName = enemyAttack.name
-                        let enemyAttackType = enemyAttack.attack_type
-                        let enemyAttackValue = parseInt(enemyAttack.attack_value)
-
-                        if (enemyAttackType === currentHeroWeakness) {
-                            enemyAttackValue = enemyAttackValue + 25
-                            currentHeroHp = currentHeroHp - enemyAttackValue
-                            if (currentHeroHp <= 0) {
-                                gameOver()
-                            } else {
-                                let advantageLi = document.createElement("li")
-                                advantageLi.innerText = `${currentHeroName} is vulnerable to ${enemyAttackType} attacks...`
-                                let enemyMove = document.createElement("li")
-                                enemyMove.innerText = `${currentEnemyName} used ${enemyAttackName} and dealt ${enemyAttackValue} damage to ${currentHeroName}...it is super effective `
-                                battleLogUl.append(advantageLi, enemyMove)
-                            }
-                        } else {
-                            currentHeroHp = currentHeroHp - enemyAttackValue
-                            if (currentHeroHp <= 0) {
-                                gameOver()
-                            } else {
-                                let enemyMove = document.createElement("li")
-                                enemyMove.innerText = `${currentEnemyName} used ${enemyAttackName} and dealt ${enemyAttackValue} damage to ${currentHeroName}`
-                                battleLogUl.append(enemyMove)
-                            }
-                        }
-                        attackAnimationContainerDiv.innerHTML = ""
-                        document.querySelector("#animateContainer").style.display = "block"
-                        let attackAnimationDiv = document.createElement("div")
-                        attackAnimationDiv.id = "attackAnimate"
-                        attackAnimationContainerDiv.append(attackAnimationDiv)
-                        enemyMove()
-                        setTimeout(function() {
-                            document.querySelector("#heroImage").classList.add("shakeImage")
-                            enableAttackBtns();
-                            document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
-                        }, 1500)
-                        setTimeout(function() {
-                            document.querySelector("#heroImage").classList.remove("shakeImage")
-                        }, 3000)
-                        setTimeout(function() {
-                                document.querySelector("#animateContainer").style.display = "none"
-                            },
-                            1500)
-
-                    }, 3000);
-
-                })
-                heroDiv.append(attackBtn)
-            })
-
-
+            renderHero(hero)
         })
 
+    //Create single Hero
+    function renderHero(hero) {
+        let heroImg = document.createElement("img")
+        heroImg.src = hero.hero_image
+        heroImg.id = "heroImage"
+        heroImg.height = 200
+        heroImg.width = 200
+        let heroName = document.createElement("h2")
+        heroName.innerText = hero.name
+        currentHeroName = hero.name
+        currentHeroWeakness = hero.weakness
+        let heroHp = document.createElement("h2")
+        heroHp.id = "heroHp"
+        currentHeroHp = hero.hero_hp
+        heroHp.innerText = `Current HP: ${hero.hero_hp}`
+        let heroAttackHeader = document.createElement("h2")
+        heroAttackHeader.innerText = "Attacks"
+        heroDiv.append(heroName, heroImg, heroHp, heroAttackHeader)
+        let attackCount = 0
+        hero.attacks.forEach(attack => {
+            let attackBtn = document.createElement("button")
+            attackBtn.dataset.id = attack.id
+            attackBtn.value = attack.attack_value
+            attackBtn.name = attack.attack_type
+            attackCount++
+            attackBtn.id = `attackBtn${attackCount}`
+            attackBtn.classList.add("attackBtns")
+            attackBtn.innerText = attack.name
+            attackBtn.style.display = "block"
+            attackBtn.addEventListener("click", function(e) {
+                console.log(`Turn: ${turnAmount++}`)
+                heroTurn(e)
+                enemyTurn()
+            })
+            heroDiv.append(attackBtn)
+        })
+    }
+
+
+    //Hero Turn Function
+    function heroTurn(e) {
+        let battleLogUl = document.querySelector("#battleLogUl")
+        battleLogUl.innerHTML = ""
+        let attackPower = parseInt(e.target.value)
+        let attackType = e.target.name
+        if (attackType === currentEnemyWeakness) {
+            attackPower = attackPower + 25
+            currentEnemyHp = currentEnemyHp - attackPower
+            let advantageLi = document.createElement("li")
+            advantageLi.innerText = `${currentEnemyName} is vulnerable to ${attackType} attacks...`
+            let recentMove = document.createElement("li")
+            recentMove.innerText = `${currentHeroName} used ${e.target.innerText} and dealt ${attackPower} damage to ${currentEnemyName}...it is super effective `
+            battleLogUl.append(advantageLi, recentMove)
+        } else {
+            currentEnemyHp = currentEnemyHp - attackPower
+            let recentMove = document.createElement("li")
+            recentMove.innerText = `${currentHeroName} used ${e.target.innerText} and dealt ${attackPower} damage to ${currentEnemyName} `
+            battleLogUl.append(recentMove)
+        }
+        if (currentEnemyHp <= 0) {
+            enemiesDefeated++
+            alert(`${currentEnemyName} has been defeated!`)
+            nextEnemy()
+        } else {
+            setTimeout(function() {
+                    document.querySelector("#animateContainer").style.display = "none"
+                },
+                1500)
+            attackAnimationContainerDiv.innerHTML = ""
+            document.querySelector("#animateContainer").style.display = "block"
+            let attackAnimationDiv = document.createElement("div")
+            attackAnimationDiv.id = "attackAnimate"
+            attackAnimationContainerDiv.append(attackAnimationDiv)
+            heroMove()
+            setTimeout(function() {
+                document.querySelector("#enemyImage").classList.add("shakeImage")
+                document.querySelector("#enemyHp").innerText = `Current HP: ${currentEnemyHp}`
+            }, 1500)
+            setTimeout(function() {
+                document.querySelector("#enemyImage").classList.remove("shakeImage")
+            }, 3000)
+        }
+        disableAttackBtns()
+    }
+
+    //Enemy Turn Function
+    function enemyTurn() {
+        setTimeout(function() {
+            let enemyAttack = currentEnemyAttacks[Math.floor(Math.random() * 5) + 0]
+            let enemyAttackName = enemyAttack.name
+            let enemyAttackType = enemyAttack.attack_type
+            let enemyAttackValue = parseInt(enemyAttack.attack_value)
+
+            if (enemyAttackType === currentHeroWeakness) {
+                enemyAttackValue = enemyAttackValue + 25
+                currentHeroHp = currentHeroHp - enemyAttackValue
+                if (currentHeroHp <= 0) {
+                    gameOver()
+                } else {
+                    let advantageLi = document.createElement("li")
+                    advantageLi.innerText = `${currentHeroName} is vulnerable to ${enemyAttackType} attacks...`
+                    let enemyMove = document.createElement("li")
+                    enemyMove.innerText = `${currentEnemyName} used ${enemyAttackName} and dealt ${enemyAttackValue} damage to ${currentHeroName}...it is super effective `
+                    battleLogUl.append(advantageLi, enemyMove)
+                }
+            } else {
+                currentHeroHp = currentHeroHp - enemyAttackValue
+                if (currentHeroHp <= 0) {
+                    gameOver()
+                } else {
+                    let enemyMove = document.createElement("li")
+                    enemyMove.innerText = `${currentEnemyName} used ${enemyAttackName} and dealt ${enemyAttackValue} damage to ${currentHeroName}`
+                    battleLogUl.append(enemyMove)
+                }
+            }
+            attackAnimationContainerDiv.innerHTML = ""
+            document.querySelector("#animateContainer").style.display = "block"
+            let attackAnimationDiv = document.createElement("div")
+            attackAnimationDiv.id = "attackAnimate"
+            attackAnimationContainerDiv.append(attackAnimationDiv)
+            enemyMove()
+            setTimeout(function() {
+                document.querySelector("#heroImage").classList.add("shakeImage")
+                enableAttackBtns();
+                document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
+            }, 1500)
+            setTimeout(function() {
+                document.querySelector("#heroImage").classList.remove("shakeImage")
+            }, 3000)
+            setTimeout(function() {
+                    document.querySelector("#animateContainer").style.display = "none"
+                },
+                1500)
+
+        }, 3000);
+    }
+
+    //Enemy Div to display Enemy
     let enemyDiv = document.createElement("div")
     enemyDiv.id = "enemyDiv"
     let enemyId = Math.floor(Math.random() * 5) + 1
     fetch(`http://localhost:3000/enemies/${enemyId}`)
         .then(resp => resp.json())
         .then(enemy => {
-            currentEnemyAttacks = enemy.attacks
-            let enemyImg = document.createElement("img")
-            enemyImg.id = "enemyImage"
-            enemyImg.src = enemy.enemy_image
-            enemyImg.height = 200
-            enemyImg.width = 200
-            let enemyName = document.createElement("h2")
-            enemyName.id = "enemyName"
-            enemyName.innerText = enemy.name
-            currentEnemyName = enemy.name
-            currentEnemyWeakness = enemy.weakness
-            let enemyHp = document.createElement("h2")
-            enemyHp.id = "enemyHp"
-            currentEnemyHp = enemy.enemy_hp
-            enemyHp.innerText = `Current HP: ${enemy.enemy_hp}`
-            enemyDiv.append(enemyName, enemyImg, enemyHp)
+            renderEnemy(enemy)
         })
-        //Trial Animation 
 
+    //Render single Enemy
+    function renderEnemy(enemy) {
+        currentEnemyAttacks = enemy.attacks
+        let enemyImg = document.createElement("img")
+        enemyImg.id = "enemyImage"
+        enemyImg.src = enemy.enemy_image
+        enemyImg.height = 200
+        enemyImg.width = 200
+        let enemyName = document.createElement("h2")
+        enemyName.id = "enemyName"
+        enemyName.innerText = enemy.name
+        currentEnemyName = enemy.name
+        currentEnemyWeakness = enemy.weakness
+        let enemyHp = document.createElement("h2")
+        enemyHp.id = "enemyHp"
+        currentEnemyHp = enemy.enemy_hp
+        enemyHp.innerText = `Current HP: ${enemy.enemy_hp}`
+        enemyDiv.append(enemyName, enemyImg, enemyHp)
+    }
 
+    //Create Animation Div
     let attackAnimationContainerDiv = document.createElement("div")
     attackAnimationContainerDiv.id = "animateContainer"
 
-    ////////
+    //Slap Hero, Enemy, and Animation on the Body
     indexBody.append(heroDiv, enemyDiv, attackAnimationContainerDiv)
 
+    //Create Battle Transanction Log Div 
     let battleBottom = document.querySelector("#battleBottom")
     battleBottom.classList.remove("hidden")
     let battleLog = document.createElement("ul")
@@ -206,12 +217,14 @@ function startGame(heroId) {
     let battleLiBeginHero = document.createElement("li")
     battleLiBeginHero.innerText = "Please Select an Attack to Proceed..."
     battleLog.append(battleLiBeginHero)
+        //Slap BTL Div on Battle Bottom
     battleBottom.append(battleLogHeader, battleLog)
 
 }
 
 //Game Over function
 function gameOver() {
+    //Render Game Over page displaying battle statistics and input for initials
     indexHead.innerHTML = ""
     indexBody.innerHTML = ""
     let battleHeader = document.createElement("h1")
@@ -223,6 +236,7 @@ function gameOver() {
     battleScoreHeader.innerText = battleScore
     let battleDetails = document.createElement("h3")
     battleDetails.innerText = ` Enemies Defeated: ${enemiesDefeated}, Total Turns: ${turnAmount}`
+        //Create Player Form for user input 
     let playerForm = document.createElement("form")
     playerForm.id = "playerForm"
     let battlePlayerNameInput = document.createElement("h3")
@@ -235,22 +249,7 @@ function gameOver() {
     playerForm.append(battlePlayerNameInput, playerName, submitBtn)
     playerForm.addEventListener("submit", function(e) {
         e.preventDefault()
-        const newGame = {
-            name: e.target.querySelector("input").value,
-            score: parseInt(e.target.parentElement.querySelector("h1").innerText)
-        }
-        fetch('http://localhost:3000/games', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(newGame)
-            })
-            .then(response => response.json())
-            .then(game => {
-                console.log(game)
-                renderLeaderBoard()
-            })
+        submitNewGame(e)
     })
     indexBody.append(battleDetails, battleScoreTitle, battleScoreHeader, battlePlayerNameInput, playerForm)
     battleHeader.innerText = "GAME OVER"
@@ -258,12 +257,27 @@ function gameOver() {
     document.querySelector("#battleBottom").remove()
 }
 
-
+//Submit New Game with Post Request and then display Leaderboard
+function submitNewGame(e) {
+    const newGame = {
+        name: e.target.querySelector("input").value,
+        score: parseInt(e.target.parentElement.querySelector("h1").innerText)
+    }
+    fetch('http://localhost:3000/games', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newGame)
+        })
+        .then(response => response.json())
+        .then(game => {
+            console.log(game)
+            renderLeaderBoard()
+        })
+}
 //Next Enemy Function 
 function nextEnemy() {
-    let selectedEnemyImage = document.querySelector("#enemyImage")
-    let selectedEnemyName = document.querySelector("#enemyName")
-    let selectedEnemyHp = document.querySelector("#enemyHp")
     console.log("On to the Next...")
     currentHeroHp = currentHeroHp + 100
     document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
@@ -274,6 +288,15 @@ function nextEnemy() {
     battleLogUl.append(nextRoundLi)
     document.querySelector("h1").innerText = `Battle ${enemiesDefeated + 1}`
         //Grab Next Enemy
+    fetchNextEnemy()
+
+}
+
+//Fetches Next Enemy for nextEnemy function
+function fetchNextEnemy() {
+    let selectedEnemyImage = document.querySelector("#enemyImage")
+    let selectedEnemyName = document.querySelector("#enemyName")
+    let selectedEnemyHp = document.querySelector("#enemyHp")
     let enemyId = Math.floor(Math.random() * 5) + 1
     fetch(`http://localhost:3000/enemies/${enemyId}`)
         .then(resp => resp.json())
@@ -285,26 +308,28 @@ function nextEnemy() {
             currentEnemyHp = enemy.enemy_hp
             currentEnemyAttacks = enemy.attacks
         })
-
 }
+
 
 //Disables Attack btns until after enemy's turn
 function disableAttackBtns() {
+    //Hero Attack 1
     let atkBtn1 = document.querySelector("#attackBtn1")
     atkBtn1.disabled = true
     atkBtn1.style.background = "black"
-
+        //Hero Attack 2
     let atkBtn2 = document.querySelector("#attackBtn2")
     atkBtn2.disabled = true
     atkBtn2.style.background = "black"
-
+        //Hero Attack 3
     let atkBtn3 = document.querySelector("#attackBtn3")
     atkBtn3.disabled = true
     atkBtn3.style.background = "black"
-
+        //Hero Attack 4
     let atkBtn4 = document.querySelector("#attackBtn4")
     atkBtn4.disabled = true
     atkBtn4.style.background = "black"
+        //Hero Attack 5
     let atkBtn5 = document.querySelector("#attackBtn5")
     atkBtn5.disabled = true
     atkBtn5.style.background = "black"
@@ -312,21 +337,23 @@ function disableAttackBtns() {
 
 //Enables Attack btns after enemy's turn
 function enableAttackBtns() {
+    //Hero Attack 1
     let atkBtn1 = document.querySelector("#attackBtn1")
     atkBtn1.disabled = false
     atkBtn1.style.background = "white"
-
+        //Hero Attack 2
     let atkBtn2 = document.querySelector("#attackBtn2")
     atkBtn2.disabled = false
     atkBtn2.style.background = "white"
-
+        //Hero Attack 3
     let atkBtn3 = document.querySelector("#attackBtn3")
     atkBtn3.disabled = false
     atkBtn3.style.background = "white"
-
+        //Hero Attack 4
     let atkBtn4 = document.querySelector("#attackBtn4")
     atkBtn4.disabled = false
     atkBtn4.style.background = "white"
+        //Hero Attack 5
     let atkBtn5 = document.querySelector("#attackBtn5")
     atkBtn5.disabled = false
     atkBtn5.style.background = "white"
@@ -341,6 +368,14 @@ function renderLeaderBoard() {
     let leaderBoardHeader = document.createElement("h1")
     leaderBoardHeader.innerText = "High Scores"
     indexHead.append(leaderBoardHeader)
+    fetchAllGames()
+    setTimeout(function() {
+        addHomebtn()
+    }, 1000)
+}
+
+//Fetch all games
+function fetchAllGames() {
     let scoreOl = document.createElement("ol")
     scoreOl.id = "scoreOl"
     let allGames = [{ name: "TINY RICK", score: 300000 }]
@@ -361,7 +396,12 @@ function renderLeaderBoard() {
                 scoreLi.innerText = `${game.name}...............${game.score}`
                 scoreOl.append(scoreLi)
             })
+            indexBody.append(scoreOl)
         })
+}
+
+//Creates Home btn 
+function addHomebtn() {
     let homeBtn = document.createElement("button")
     homeBtn.id = "homeBtn"
     homeBtn.innerText = "Play Again?!"
@@ -369,8 +409,7 @@ function renderLeaderBoard() {
         location.assign('file:///Users/gc3/Development/code/mod3project/front-end%20/index.html');
     })
 
-    indexBody.append(scoreOl, homeBtn)
-
+    indexBody.append(homeBtn)
 }
 
 //Fetch all Stages
@@ -382,6 +421,7 @@ fetch("http://localhost:3000/battle_stages")
         })
     })
 
+//Animation function for Hero attack
 function heroMove() {
     let elem = document.getElementById("attackAnimate");
     let pos = 0;
@@ -397,6 +437,7 @@ function heroMove() {
     }
 }
 
+//Animation function for Enemy attack
 function enemyMove() {
     let attackAnimationDiv = document.createElement("div")
     attackAnimationDiv.id = "attackAnimate"
