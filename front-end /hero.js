@@ -12,7 +12,7 @@ function bootUpApp() {
 
 //Fetches all Heros
 function fetchHeros() {
-    fetch("http://localhost:3000/heros")
+    fetch("https://floating-sea-80416.herokuapp.com/heros")
         .then(resp => resp.json())
         .then(heros => {
             heros.forEach(hero => {
@@ -31,7 +31,7 @@ function createAttackTable() {
     let headerTitle = document.createElement("caption")
     headerTitle.id = "tableCaption"
     headerTitle.innerText = "Attacks"
-        //Create table header information
+    //Create table header information
     let headerRow = document.createElement("tr")
     let headerName = document.createElement("td")
     headerName.innerText = "Name"
@@ -39,7 +39,7 @@ function createAttackTable() {
     headerType.innerText = "Type"
     let headerValue = document.createElement("td")
     headerValue.innerText = "Value"
-        //Slap table header info on onto row and then table
+    //Slap table header info on onto row and then table
     headerRow.append(headerName, headerType, headerValue)
     thead.append(headerTitle, headerRow)
     attackTable.append(thead, tbody)
@@ -50,16 +50,16 @@ function createAttackTable() {
 function createAttackRow(attack) {
     let attackTable = document.querySelector("#attackTableBody")
     let attackRow = document.createElement("tr")
-        //Create Attack Name Data
+    //Create Attack Name Data
     let attackName = document.createElement("td")
     attackName.innerText = attack.name
-        //Create Attack Type Data
+    //Create Attack Type Data
     let attackType = document.createElement("td")
     attackType.innerText = attack.attack_type
-        //Create Attack Power Data
+    //Create Attack Power Data
     let attackPower = document.createElement("td")
     attackPower.innerText = attack.attack_value
-        //Slap row on table
+    //Slap row on table
     attackRow.append(attackName, attackType, attackPower)
     attackTable.append(attackRow)
 }
@@ -72,11 +72,11 @@ function startBtn(heroId) {
     startGameBtn.innerText = "Start Game"
     startGameBtn.id = "startGameBtn"
     startGameBtn.dataset.id = heroId
-    startGameBtn.addEventListener("click", function(e) {
+    startGameBtn.addEventListener("click", function (e) {
         heroId = e.target.dataset.id
         indexHead.innerHTML = ""
         indexBody.innerHTML = ""
-            //Starts Game
+        //Starts Game
         startGame(heroId)
     })
     optionParent.append(lineBreak)
@@ -87,13 +87,14 @@ function startBtn(heroId) {
 function renderHero(hero) {
     let heroName = document.createElement("li")
     let heroImg = document.createElement("img")
+    heroImg.classList.add("imageHoverAction")
     heroImg.dataset.id = hero.id
-    heroImg.addEventListener("click", function(e) {
+    heroImg.addEventListener("click", function (e) {
         heroDetailParent.innerHTML = ""
         heroAttacks.innerHTML = ""
         optionParent.innerHTML = ""
         let heroId = e.target.dataset.id
-        fetch(`http://localhost:3000/heros/${heroId}`)
+        fetch(`https://floating-sea-80416.herokuapp.com/heros/${heroId}`)
             .then(resp => resp.json())
             .then(hero => {
                 renderHeroDetails(hero)

@@ -23,7 +23,7 @@ function startGame(heroId) {
     //Hero Div to display Hero 
     let heroDiv = document.createElement("div")
     heroDiv.id = "heroDiv"
-    fetch(`http://localhost:3000/heros/${heroId}`)
+    fetch(`https://floating-sea-80416.herokuapp.com/heros/${heroId}`)
         .then(resp => resp.json())
         .then(hero => {
             renderHero(hero)
@@ -58,7 +58,7 @@ function startGame(heroId) {
             attackBtn.classList.add("attackBtns")
             attackBtn.innerText = attack.name
             attackBtn.style.display = "block"
-            attackBtn.addEventListener("click", function(e) {
+            attackBtn.addEventListener("click", function (e) {
                 console.log(`Turn: ${turnAmount++}`)
                 heroTurn(e)
                 enemyTurn()
@@ -93,9 +93,9 @@ function startGame(heroId) {
             alert(`${currentEnemyName} has been defeated!`)
             nextEnemy()
         } else {
-            setTimeout(function() {
-                    document.querySelector("#animateContainer").style.display = "none"
-                },
+            setTimeout(function () {
+                document.querySelector("#animateContainer").style.display = "none"
+            },
                 1500)
             attackAnimationContainerDiv.innerHTML = ""
             document.querySelector("#animateContainer").style.display = "block"
@@ -103,11 +103,11 @@ function startGame(heroId) {
             attackAnimationDiv.id = "attackAnimate"
             attackAnimationContainerDiv.append(attackAnimationDiv)
             heroMove()
-            setTimeout(function() {
+            setTimeout(function () {
                 document.querySelector("#enemyImage").classList.add("shakeImage")
                 document.querySelector("#enemyHp").innerText = `Current HP: ${currentEnemyHp}`
             }, 1500)
-            setTimeout(function() {
+            setTimeout(function () {
                 document.querySelector("#enemyImage").classList.remove("shakeImage")
             }, 3000)
         }
@@ -116,7 +116,7 @@ function startGame(heroId) {
 
     //Enemy Turn Function
     function enemyTurn() {
-        setTimeout(function() {
+        setTimeout(function () {
             let enemyAttack = currentEnemyAttacks[Math.floor(Math.random() * 5) + 0]
             let enemyAttackName = enemyAttack.name
             let enemyAttackType = enemyAttack.attack_type
@@ -150,17 +150,17 @@ function startGame(heroId) {
             attackAnimationDiv.id = "attackAnimate"
             attackAnimationContainerDiv.append(attackAnimationDiv)
             enemyMove()
-            setTimeout(function() {
+            setTimeout(function () {
                 document.querySelector("#heroImage").classList.add("shakeImage")
                 enableAttackBtns();
                 document.querySelector("#heroHp").innerText = `Current HP: ${currentHeroHp}`
             }, 1500)
-            setTimeout(function() {
+            setTimeout(function () {
                 document.querySelector("#heroImage").classList.remove("shakeImage")
             }, 3000)
-            setTimeout(function() {
-                    document.querySelector("#animateContainer").style.display = "none"
-                },
+            setTimeout(function () {
+                document.querySelector("#animateContainer").style.display = "none"
+            },
                 1500)
 
         }, 3000);
@@ -170,7 +170,7 @@ function startGame(heroId) {
     let enemyDiv = document.createElement("div")
     enemyDiv.id = "enemyDiv"
     let enemyId = Math.floor(Math.random() * 5) + 1
-    fetch(`http://localhost:3000/enemies/${enemyId}`)
+    fetch(`https://floating-sea-80416.herokuapp.com/enemies/${enemyId}`)
         .then(resp => resp.json())
         .then(enemy => {
             renderEnemy(enemy)
@@ -217,7 +217,7 @@ function startGame(heroId) {
     let battleLiBeginHero = document.createElement("li")
     battleLiBeginHero.innerText = "Please Select an Attack to Proceed..."
     battleLog.append(battleLiBeginHero)
-        //Slap BTL Div on Battle Bottom
+    //Slap BTL Div on Battle Bottom
     battleBottom.append(battleLogHeader, battleLog)
 
 }
@@ -236,7 +236,7 @@ function gameOver() {
     battleScoreHeader.innerText = battleScore
     let battleDetails = document.createElement("h3")
     battleDetails.innerText = ` Enemies Defeated: ${enemiesDefeated}, Total Turns: ${turnAmount}`
-        //Create Player Form for user input 
+    //Create Player Form for user input 
     let playerForm = document.createElement("form")
     playerForm.id = "playerForm"
     let battlePlayerNameInput = document.createElement("h3")
@@ -247,7 +247,7 @@ function gameOver() {
     submitBtn.id = "submitBtn"
     submitBtn.innerText = "Submit"
     playerForm.append(battlePlayerNameInput, playerName, submitBtn)
-    playerForm.addEventListener("submit", function(e) {
+    playerForm.addEventListener("submit", function (e) {
         e.preventDefault()
         submitNewGame(e)
     })
@@ -263,13 +263,13 @@ function submitNewGame(e) {
         name: e.target.querySelector("input").value,
         score: parseInt(e.target.parentElement.querySelector("h1").innerText)
     }
-    fetch('http://localhost:3000/games', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(newGame)
-        })
+    fetch('https://floating-sea-80416.herokuapp.com/games', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newGame)
+    })
         .then(response => response.json())
         .then(game => {
             console.log(game)
@@ -287,7 +287,7 @@ function nextEnemy() {
     nextRoundLi.innerText = `Round ${enemiesDefeated + 1}....`
     battleLogUl.append(nextRoundLi)
     document.querySelector("h1").innerText = `Battle ${enemiesDefeated + 1}`
-        //Grab Next Enemy
+    //Grab Next Enemy
     fetchNextEnemy()
 
 }
@@ -298,7 +298,7 @@ function fetchNextEnemy() {
     let selectedEnemyName = document.querySelector("#enemyName")
     let selectedEnemyHp = document.querySelector("#enemyHp")
     let enemyId = Math.floor(Math.random() * 5) + 1
-    fetch(`http://localhost:3000/enemies/${enemyId}`)
+    fetch(`https://floating-sea-80416.herokuapp.com/enemies/${enemyId}`)
         .then(resp => resp.json())
         .then(enemy => {
             selectedEnemyImage.src = enemy.enemy_image
@@ -317,19 +317,19 @@ function disableAttackBtns() {
     let atkBtn1 = document.querySelector("#attackBtn1")
     atkBtn1.disabled = true
     atkBtn1.style.background = "black"
-        //Hero Attack 2
+    //Hero Attack 2
     let atkBtn2 = document.querySelector("#attackBtn2")
     atkBtn2.disabled = true
     atkBtn2.style.background = "black"
-        //Hero Attack 3
+    //Hero Attack 3
     let atkBtn3 = document.querySelector("#attackBtn3")
     atkBtn3.disabled = true
     atkBtn3.style.background = "black"
-        //Hero Attack 4
+    //Hero Attack 4
     let atkBtn4 = document.querySelector("#attackBtn4")
     atkBtn4.disabled = true
     atkBtn4.style.background = "black"
-        //Hero Attack 5
+    //Hero Attack 5
     let atkBtn5 = document.querySelector("#attackBtn5")
     atkBtn5.disabled = true
     atkBtn5.style.background = "black"
@@ -341,19 +341,19 @@ function enableAttackBtns() {
     let atkBtn1 = document.querySelector("#attackBtn1")
     atkBtn1.disabled = false
     atkBtn1.style.background = "white"
-        //Hero Attack 2
+    //Hero Attack 2
     let atkBtn2 = document.querySelector("#attackBtn2")
     atkBtn2.disabled = false
     atkBtn2.style.background = "white"
-        //Hero Attack 3
+    //Hero Attack 3
     let atkBtn3 = document.querySelector("#attackBtn3")
     atkBtn3.disabled = false
     atkBtn3.style.background = "white"
-        //Hero Attack 4
+    //Hero Attack 4
     let atkBtn4 = document.querySelector("#attackBtn4")
     atkBtn4.disabled = false
     atkBtn4.style.background = "white"
-        //Hero Attack 5
+    //Hero Attack 5
     let atkBtn5 = document.querySelector("#attackBtn5")
     atkBtn5.disabled = false
     atkBtn5.style.background = "white"
@@ -369,7 +369,7 @@ function renderLeaderBoard() {
     leaderBoardHeader.innerText = "High Scores"
     indexHead.append(leaderBoardHeader)
     fetchAllGames()
-    setTimeout(function() {
+    setTimeout(function () {
         addHomebtn()
     }, 1000)
 }
@@ -379,7 +379,7 @@ function fetchAllGames() {
     let scoreOl = document.createElement("ol")
     scoreOl.id = "scoreOl"
     let allGames = [{ name: "TINY RICK", score: 300000 }]
-    fetch("http://localhost:3000/games")
+    fetch("https://floating-sea-80416.herokuapp.com/games")
         .then(resp => resp.json())
         .then(games => {
             games.forEach(game => {
@@ -388,7 +388,7 @@ function fetchAllGames() {
                     score: game.score
                 })
             })
-            allGames.sort(function(a, b) {
+            allGames.sort(function (a, b) {
                 return b.score - a.score;
             });
             allGames.forEach(game => {
@@ -405,7 +405,7 @@ function addHomebtn() {
     let homeBtn = document.createElement("button")
     homeBtn.id = "homeBtn"
     homeBtn.innerText = "Play Again?!"
-    homeBtn.addEventListener("click", function(e) {
+    homeBtn.addEventListener("click", function (e) {
         location.assign('file:///Users/gc3/Development/code/mod3project/front-end%20/index.html');
     })
 
@@ -413,7 +413,7 @@ function addHomebtn() {
 }
 
 //Fetch all Stages
-fetch("http://localhost:3000/battle_stages")
+fetch("https://floating-sea-80416.herokuapp.com/battle_stages")
     .then(resp => resp.json())
     .then(stages => {
         stages.forEach(stage => {
